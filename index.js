@@ -74,14 +74,20 @@ function game() {
     let pointsToWin = numRounds - Math.floor(numRounds / 2)
     let finished = false;
     let playerSelection;
+    let computerSelection;
     let outcome;
     let inputValid;
 
     while ( !finished ) {
         playerSelection = prompt("Do you play Rock, Paper or Scissors?") 
         inputValid = validateInput(playerSelection);
+
+        // Get the computer's move
+        computerSelection = getComputerChoice();
+
         if ( inputValid ) {
-            outcome = playRound(playerSelection, getComputerChoice());
+            console.log(`The computer chose ${computerSelection}`);
+            outcome = playRound(playerSelection, computerSelection);
 
             // Print the round results
             console.log(outcome[0]);
