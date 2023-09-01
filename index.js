@@ -6,7 +6,6 @@
  * @date 08/17/23
  */
 
-
 /**
  * Computes the computer move
  */
@@ -49,11 +48,11 @@ function playRound(playerSelection, computerSelection) {
 
     // Generate report
     if ( outcome === "win" ) {
-        message = "Looks like you've won!";
+        message = "Looks like you've won this round!";
     } else if ( outcome === "tie" ) {
         message = "It's a tie!";
     } else {
-        message = "Aw shucks, you lost!";
+        message = "Aw shucks, you lost this round!";
     }
 
     return [message, outcome];
@@ -68,51 +67,85 @@ function validateInput(playerSelection) {
  * The rps game
  */
 function game() {
-    let playerScore = 0;
-    let computerScore = 0;
-    let numRounds = 5;
-    let pointsToWin = numRounds - Math.floor(numRounds / 2)
-    let finished = false;
-    let playerSelection;
-    let computerSelection;
-    let outcome;
-    let inputValid;
+  let playerScore = 0;
+  let computerScore = 0;
+  let pointsToWin = 5;
+  let finished = false;
+  let playerSelection;
+  let computerSelection;
+  let outcome;
+  let inputValid;
 
-    while ( !finished ) {
-        playerSelection = prompt("Do you play Rock, Paper or Scissors?") 
-        inputValid = validateInput(playerSelection);
+  const buttons = document.querySelectorAll("button"); 
+  const scoreElem = document.querySelector('.score');
+  const compPlayElem = document.querySelector('.computer-choice');
+  const outcomeElem = document.querySelector('.outcome');
 
-        // Get the computer's move
-        computerSelection = getComputerChoice();
+  scoreElem.textContent = `Player: ${playerScore}   Computer: ${computerScore}`;
+  outcomeElem.textContent = "Make a move to begin playing!";
+  
+  // Add listeners to each button that play a game round
+  buttons.forEach((button) => {
+    button.addEventListener('click', (e) => {
+      playerSelection = button.textContent; 
+      inputValid = validateInput(playerSelection);
 
-        if ( inputValid ) {
-            console.log(`The computer chose ${computerSelection}`);
-            outcome = playRound(playerSelection, computerSelection);
+      // Get the computer's move
+      computerSelection = getComputerChoice();
 
-            // Print the round results
-            console.log(outcome[0]);
+      if (inputValid) {
+        outcomeElem.textContent = "";
+        compPlayElem.textContent = `The computer chose ${computerSelection}`;
+        outcome = playRound(playerSelection, computerSelection);
 
-            // Adjust scores and check for victory
-            if ( outcome[1] === "win" ) {
-                playerScore += 1;
-                if ( playerScore == pointsToWin ) {
-                    finished = true;
-                    console.log("Congratulations! You've won! :)");
-                }
-            } else if ( outcome[1] === "lose" ) {
-                computerScore += 1;
-                if ( computerScore == pointsToWin ) {
-                    finished = true;
-                    console.log("Oh no! You've been defeated!");
-                }
-            }
+        // Adjust scores and check for victory
+        if ( outcome[1] === "win" ) {
+          playerScore += 1;
+          if ( playerScore == pointsToWin ) {
+            finished = true;
 
-            console.log(`Player: ${playerScore}   Computer: ${computerScore}`);
-        } else {
-            console.log("Invalid move specified");
+            const congrats = document.createElement("h3");
+            congrats.textContent = "Congratulations! You've won! :)"
+            congrats.style.color = "green";
+            outcomeElem.appendChild(congrats);
+
+            buttons.forEach((button) => {
+              button.disabled = true;
+            });
+
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          }
+        } else if ( outcome[1] === "lose" ) {
+          computerScore += 1;
+          if ( computerScore == pointsToWin ) {
+            finished = true;
+
+            const ohno = document.createElement("h3");
+            ohno.textContent = "Oh no! You've been defeated!";
+            ohno.style.color = "red";
+            outcomeElem.appendChild(ohno);
+
+            buttons.forEach((button) => {
+              button.disabled = true;
+            });
+
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          }
         }
-    }
+
+        scoreElem.textContent = `Player: ${playerScore}   Computer: ${computerScore}`;
+
+      } else {
+        outcomeElem.textContent = "Invalid move specified";
+      }
+    });
+  });
 }
 
 // Start the game
 game();
+
